@@ -1,0 +1,27 @@
+name: Run Monthly Trend Filter Engine
+on:
+  schedule:
+    # Triggers at 21:05 UTC (1:05 PM PDT) on the 28th, 29th, 30th, and 31st of every month
+    - cron: '5 21 28-31 * *' 
+  workflow_dispatch: # Allows you to press a button on your phone to run it manually anytime
+
+jobs:
+  trade:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Initialize Free Python Server
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Architecture Infrastructure
+        run: pip install alpaca-py yfinance pandas
+
+      - name: Execute Live Code Matrix
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+        run: python alpaca_paper_10month.py
