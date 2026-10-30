@@ -1,0 +1,37 @@
+name: Run SPY 10-month bot
+
+on:
+  schedule:
+    # Every weekday at 15:35 UTC. That is after the US market opens in both
+    # summer time (13:30 UTC open) and winter time (14:30 UTC open).
+    # GitHub may start scheduled runs a few minutes late; that is fine here.
+    - cron: "35 15 * * 1-5"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run? (true = print only, no orders)"
+        default: "true"
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install libraries
+        run: python -m pip install alpaca-py yfinance pandas
+
+      - name: Run the bot
+        run: python bot.py
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          # Manual runs use the dry_run choice you pick; scheduled runs place paper orders.
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          WRITE_LOG: "false"
