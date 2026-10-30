@@ -99,8 +99,13 @@ def connect():
         sys.exit("Missing keys. Set ALPACA_API_KEY and ALPACA_SECRET_KEY as "
                  "environment variables (see the instructions at the top of this file), "
                  "then reopen your Command Prompt.")
+    
+    # ADDED .strip() TO CLEAN UP INVISIBLE NEWLINES OR SPACES FROM THE CLOUD COPIES
+    clean_api_key = api_key.strip()
+    clean_secret_key = secret_key.strip()
+    
     # paper=True points the client at Alpaca's fake-money environment
-    return TradingClient(api_key, secret_key, paper=True)
+    return TradingClient(clean_api_key, clean_secret_key, paper=True)
 
 
 def current_spy_position(client):
